@@ -1,7 +1,47 @@
+// "use server"
+
+import prisma from '@/lib/client';
+import { auth, currentUser } from '@clerk/nextjs/server'
 import Image from 'next/image'
 import React from 'react'
 
-const AddPost = () => {
+
+const AddPost = async() => {
+
+  
+  const { userId } = await auth()
+  console.log(userId);
+
+    const testAction = async(formData : FormData)=>{
+      "use server"
+      if(!userId) return;
+
+      // const desc = formData.get("desc") as string;
+      try {
+        const user_db_Id = await prisma.user.findFirst()
+        const createPost = await prisma.post.create({
+          data: {
+            userId : "679927f1e594917601338380",
+            desc : "aman_861",
+          },
+        });
+        console.log(createPost);
+        } catch (error) {
+          console.log("Error is -> " + error);
+        }
+      // try {
+      //   const createUser = await prisma.user.create({
+      //     data: {
+      //       clerkId : "123",
+      //       username : "aman_862",
+      //     },
+      //   });
+      //   console.log(createUser);
+      //   } catch (error) {
+      //     console.log("Error is -> " + error);
+      //   }
+  }
+
   return (
     <div className='p-4 bg-white rounded-lg shadow-md flex gap-4 justify-between text-sm'>
         {/* Avatar */}
@@ -9,10 +49,11 @@ const AddPost = () => {
       {/* POST Details */}
         <div className=' flex-1'>
           {/* Text Input */}
-          <div className='flex gap-4'>
-            <textarea placeholder="What's on Your Mind" className='flex-1 bg-slate-100 rounded-lg p-2'/>
+          <form action={testAction} className='flex gap-4'>
+            <textarea name='desc' placeholder="What's on Your Mind" className='flex-1 bg-slate-100 rounded-lg p-2'/>
             <Image src="/emoji.png" alt='' width={20} height={20} className='w-5 h-5 cursor-pointer self-end' />
-          </div>
+            <button>Send</button>
+          </form>
           {/* POST Options */}
           <div className='flex items-center mt-4 gap-4 text-gray-400 flex-wrap'>
               <div className='flex items-center gap-2 cursor-pointer'>
