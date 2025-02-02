@@ -1,8 +1,8 @@
-import AddPhoto from "@/components/AddPost"
-import { Feed } from "@/components/Feed"
-import { LeftMenu } from "@/components/LeftMenu"
+import AddPhoto from "@/components/Feeds/AddPost"
+import { Feed } from "@/components/Feeds/Feed"
+import { LeftMenu } from "@/components/LeftMenu/LeftMenu"
 import { RightMenu } from "@/components/RightMenu"
-import Stories from "@/components/Stories"
+import Stories from "@/components/Feeds/Stories"
 
 const Homepage = () => {
   return (

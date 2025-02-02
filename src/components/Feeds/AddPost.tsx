@@ -9,26 +9,26 @@ import React from 'react'
 const AddPost = async() => {
 
   
-  const { userId } = await auth()
-  console.log(userId);
+  // const { userId } = await auth()
+  // console.log(userId);
 
     const testAction = async(formData : FormData)=>{
-      "use server"
-      if(!userId) return;
+      // "use server"
+      // if(!userId) return;
 
       // const desc = formData.get("desc") as string;
-      try {
-        const user_db_Id = await prisma.user.findFirst()
-        const createPost = await prisma.post.create({
-          data: {
-            userId : "679927f1e594917601338380",
-            desc : "aman_861",
-          },
-        });
-        console.log(createPost);
-        } catch (error) {
-          console.log("Error is -> " + error);
-        }
+      // try {
+      //   const user_db_Id = await prisma.user.findFirst()
+      //   const createPost = await prisma.post.create({
+      //     data: {
+      //       userId : "679927f1e594917601338380",
+      //       desc : "aman_861",
+      //     },
+      //   });
+      //   console.log(createPost);
+      //   } catch (error) {
+      //     console.log("Error is -> " + error);
+      //   }
       // try {
       //   const createUser = await prisma.user.create({
       //     data: {
@@ -49,7 +49,7 @@ const AddPost = async() => {
       {/* POST Details */}
         <div className=' flex-1'>
           {/* Text Input */}
-          <form action={testAction} className='flex gap-4'>
+          <form className='flex gap-4'>
             <textarea name='desc' placeholder="What's on Your Mind" className='flex-1 bg-slate-100 rounded-lg p-2'/>
             <Image src="/emoji.png" alt='' width={20} height={20} className='w-5 h-5 cursor-pointer self-end' />
             <button>Send</button>
