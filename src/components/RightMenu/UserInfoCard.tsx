@@ -6,6 +6,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
 import UserInfoCardInteraction from './UserInfoCardInteraction'
+import UpdateUser from './UpdateUser'
 
 const UserInfoCard = async({user} : {user : User}) => {
 
@@ -32,14 +33,13 @@ const UserInfoCard = async({user} : {user : User}) => {
     let isFollowing = false;
     let isFollowReqSent = false;
 
-
     const blockRes = await prisma.block.findFirst({
         where: {
             blockedId: currentUserID,
             blockerId: user.id
         },
     });
-
+   
     const followingRes = await prisma.follower.findFirst({
         where: {
             followerId: currentUserID,
@@ -58,13 +58,14 @@ const UserInfoCard = async({user} : {user : User}) => {
     (followingRes) ? isFollowing = true : isFollowing = false;
     (followReqSent) ? isFollowReqSent = true : isFollowReqSent = false;
 
-    if(!currentUserID) return null;
+    if(!currentUserID || !user.id) return null;
   return (
     <div className='p-4 bg-white rounded-lg shadow-md text-sm flex flex-col gap-4'>
         {/* TOP */}
         <div className='font-medium flex justify-between items-center'>
             <span className='text-slate-500'>User Information</span>
-            <Link href="/" className='text-blue-500'>See all</Link>
+
+            {user.id === currentUserID ? <UpdateUser user={user} /> :  <Link href="/" className='text-blue-500'>See all</Link>}
         </div>
         {/* BOTTOM */}
         <div className='flex flex-col gap-4'>
@@ -95,7 +96,7 @@ const UserInfoCard = async({user} : {user : User}) => {
                     <span>Joined {formattedDate}</span>
                 </div>
             </div>
-            <UserInfoCardInteraction userId = {user.id} currentUserID={currentUserID} isUserBlocked={isUserBlocked} isFollowing={isFollowing} isFollowReqSent={isFollowReqSent} />
+            {(user.id != currentUserID) &&  <UserInfoCardInteraction userId = {user.id} currentUserID={currentUserID} isUserBlocked={isUserBlocked} isFollowing={isFollowing} isFollowReqSent={isFollowReqSent} />}
         </div>
     </div>
   )

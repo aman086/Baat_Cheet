@@ -1,6 +1,11 @@
+
 import prisma from '@/lib/client';
 import { auth } from '@clerk/nextjs/server'
 import Image from 'next/image'
+import Link from 'next/link';
+// import { useRouter } from 'next/navigation';
+
+
 import React from 'react'
 
 const ProfileCard = async() => {
@@ -23,7 +28,12 @@ const ProfileCard = async() => {
     }
    });
 
+  //  const router = useRouter();
    console.log(user);
+
+  //  const handleProfileClick = ()=>{
+  //   router.push(`/profile/${user?.username}`);
+  //  }
 
   if(!user) return null;
   return (
@@ -38,7 +48,10 @@ const ProfileCard = async() => {
             <span className='text-slate-400 text-xs'>{user?._count.followers} Followers</span>
         </div >
         <div className='flex items-center justify-center'>
-        <button className='bg-blue-500 text-white p-2 rounded-md font-normal'>My Profile</button>
+        {/* <button className='bg-blue-500 text-white p-2 rounded-md font-normal' onClick={handleProfileClick}>My Profile</button> */}
+        <Link href={`/profile/${user.username}`}>
+          <button className='bg-blue-500 text-white p-2 rounded-md font-normal'>My Profile</button>
+        </Link>
         </div>
     </div>
   )

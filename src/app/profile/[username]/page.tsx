@@ -78,7 +78,7 @@ const Profile = async({params} : {params : {username : string}}) => {
               <span className='font-bold text-md'>Following</span>
             </div>
         </div>
-        <Feed />
+        <Feed username={user.username} />
       </div>
     </div>
     <div className="hidden lg:block w-[30%]"><RightMenu user={user}/></div>
