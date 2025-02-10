@@ -30,16 +30,16 @@ const UserMediaCard = async({user} : {user : User}) => {
             <Link href="/" className='text-blue-500'>See all</Link>
         </div>
         {/* BOTTOM */}
+        <div className='flex justify-between flex-wrap gap-4' >
         {postWithMedia.length ? postWithMedia.map(post=> (
 
-            <div className='flex justify-between flex-wrap gap-4' key={post.id}>
-            <div className='relative w-1/5 h-24'>
+            <div className='relative w-1/5 h-24' key={post.id}>
                 <Image src={post.img!} alt='' fill className='object-cover rounded-md' />
-            </div>
             
         </div>
         )) : "No Media Found"
     }
+        </div>
     </div>
   )
 }

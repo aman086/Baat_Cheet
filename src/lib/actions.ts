@@ -3,6 +3,7 @@
 import { auth } from "@clerk/nextjs/server";
 import prisma from "./client"
 import { z } from "zod";
+import { revalidatePath } from "next/cache";
 
 export const switchFollow = async({userId , currentUserID , isUserBlocked , isFollowing , isFollowReqSent} : {
     userId : string,
@@ -267,4 +268,125 @@ export const getUserId_FromClerkId = async(userId : string)=>{
     });
     if(!getUser) return null;
     return getUser;
+}
+
+export const addComment = async(postId : string , desc : string)=>{
+    const {userId : currentUserId} = await auth();
+    if(!currentUserId) return null;
+    try {
+        const userDetails = await prisma.user.findFirst({
+            where:{
+                clerkId: currentUserId,
+            },
+        });
+        if(!userDetails) return null;
+        const createComment = await prisma.comment.create({
+            data:{
+                desc: desc,
+                postId: postId,
+                userId: userDetails.id
+            },
+            include:{
+                user: true
+            }
+        });
+        return createComment;
+    } catch (error) {
+        console.log(error);
+        throw new Error("Something went Wrong");
+    }
+}
+
+export const addPost = async(formData : FormData, imgUrl : string)=>{
+    const desc = formData.get("desc") as string;
+    const Desc = z.string().nonempty().min(1).max(255);
+    const validateDesc = Desc.safeParse(desc);
+    if(!validateDesc.success){
+        console.log(validateDesc.error.flatten().fieldErrors);
+        throw new Error("Description is required");
+    }
+   const {userId : currentUserId} = await auth();
+    if(!currentUserId) return;
+    try {
+        const userDetails = await prisma.user.findFirst({
+            where:{
+                clerkId: currentUserId,
+            },
+        });
+        if(!userDetails) return;
+        const createPost = await prisma.post.create({
+            data:{
+                desc: validateDesc.data,
+                userId: userDetails.id,
+                img: imgUrl
+            },
+            include:{
+                user: true
+            }
+        });
+        // console.log("Created Post -> " , createPost);
+        revalidatePath("/");
+        // return;
+    } catch (error) {
+        console.log(error);
+        throw new Error("Something went Wrong");
+    }
+}
+
+
+export const addStory = async(imgUrl : string , userId : string)=>{
+
+    try {
+        const existingStory = await prisma.story.findFirst({
+            where:{
+                userId: userId,
+            },
+        });
+        if(existingStory){
+            await prisma.story.delete({
+                where:{
+                    id: existingStory.id,
+                },
+            });
+        }
+        
+        const createStory = await prisma.story.create({
+            data:{
+                userId: userId,
+                img: imgUrl,
+                expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000)
+            },
+            include:{
+                user: true
+            }
+        });
+        return createStory;
+    } catch (error) {
+        console.log(error);
+        throw new Error("Something went Wrong");
+    }
+}
+
+
+export const deletePost = async(postId : string)=>{
+    const {userId : currentUserId} = await auth();
+    if(!currentUserId) throw new Error("User not authenticated");
+    try {
+        const userDetails = await prisma.user.findFirst({
+            where:{
+                clerkId: currentUserId,
+            },
+        });
+        if(!userDetails) return;
+        await prisma.post.delete({
+            where:{
+                id: postId,
+                userId : userDetails.id,
+            },
+        });
+        revalidatePath("/");
+    } catch (error) {
+        console.log(error);
+        throw new Error("Something went Wrong");
+    }
 }

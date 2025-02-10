@@ -1,98 +1,101 @@
-import React from 'react'
-import Post from './Post'
-import { auth } from '@clerk/nextjs/server'
-import prisma from '@/lib/client';
+import React from "react";
+import Post from "./Post";
+import { auth, currentUser } from "@clerk/nextjs/server";
+import prisma from "@/lib/client";
 
-export const Feed = async({username} : {username ?: string}) => {
+export const Feed = async ({ username }: { username?: string }) => {
+  console.log("Feed & username -> ", username);
+  const { userId: userClerkId } = await auth();
 
-  const {userId : userClerkId} = await auth();
-
-  if(!userClerkId) return null;
+  if (!userClerkId) return null;
   const userCompleteDetails = await prisma.user.findFirst({
-    where:{
-      clerkId: userClerkId,
+    where: {
+      username: username,
     },
   });
 
-  if(!userCompleteDetails) return null;
+  if (!userCompleteDetails) return null;
   const userId = userCompleteDetails.id;
-  let posts:any[] = [];
-  if(username){
-
-     posts = await prisma.post.findMany({
-      where:{
+  let posts: any[] = [];
+  if (username) {
+    posts = await prisma.post.findMany({
+      where: {
         userId: userId,
       },
-      include:{
+      include: {
         user: true,
-        likes:{
-          select:{
+        likes: {
+          select: {
             userId: true,
-          }
+          },
         },
-        _count:{
-          select:{
+        _count: {
+          select: {
             comments: true,
-          }
-        }
+          },
+        },
       },
-      orderBy:{
+      orderBy: {
         createdAt: "desc",
-      }
-     })
+      },
+    });
   }
-  
-  console.log("userID -> " , userId);
-  if(!username && userId){
+
+  console.log("userID -> ", userId);
+  if (!username && userId) {
     // console.log("username nahi mila");
     const following = await prisma.follower.findMany({
-      where:{
+      where: {
         followingId: userId,
       },
-      select:{
+      select: {
         followerId: true,
       },
     });
-
-    // console.log("following -> " , following);
-    const followingIds = following.map(f => f.followerId);
-    // console.log("followingIds -> " , followingIds);
-    posts = await prisma.post.findMany({
+   
+    const currentUser = await prisma.user.findFirst({
       where:{
-        userId:{
-          in: followingIds,
-        }
-      },
-      include:{
-        user: true,
-        likes:{
-          select:{
-            userId: true,
-          }
-        },
-        _count:{
-          select:{
-            comments: true,
-          }
-        }
-      },
-      orderBy:{
-        createdAt: "desc",
+        clerkId: userClerkId,
       }
     })
-
+    // console.log("following -> " , following);
+    if(!currentUser) return null;
+    const followingIds = following.map((f) => f.followerId);
+    const Ids = [currentUser.id, ...followingIds];
+    // console.log("followingIds -> " , followingIds);
+    posts = await prisma.post.findMany({
+      where: {
+        userId: {
+          in: Ids,
+        },
+      },
+      include: {
+        user: true,
+        likes: {
+          select: {
+            userId: true,
+          },
+        },
+        _count: {
+          select: {
+            comments: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
   }
-
 
   //  console.log("userName -> " + username);
   //  console.log("Post -> " + posts);
 
   return (
-    <div className='p-4 bg-white rounded-lg flex flex-col gap-12'>
-      {
-        posts?.length ? (posts.map(post => <Post key={post.id} post={post} />)) : "No Post Found"
-      }
-
+    <div className="p-4 bg-white rounded-lg flex flex-col gap-12">
+      {posts?.length
+        ? posts.map((post) => <Post key={post.id} post={post} />)
+        : "No Post Found"}
     </div>
-  )
-}
+  );
+};

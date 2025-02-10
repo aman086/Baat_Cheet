@@ -2,7 +2,7 @@ import AddPost from '@/components/Feeds/AddPost';
 import { Feed } from '@/components/Feeds/Feed';
 import { LeftMenu } from '@/components/LeftMenu/LeftMenu';
 import { RightMenu } from '@/components/RightMenu/RightMenu';
-import Stories from '@/components/Feeds/Stories';
+import Stories from '@/components/Stories';
 import prisma from '@/lib/client';
 import { auth } from '@clerk/nextjs/server';
 import Image from 'next/image';
@@ -78,7 +78,7 @@ const Profile = async({params} : {params : {username : string}}) => {
               <span className='font-bold text-md'>Following</span>
             </div>
         </div>
-        <Feed username={user.username} />
+        <Feed username={params.username} />
       </div>
     </div>
     <div className="hidden lg:block w-[30%]"><RightMenu user={user}/></div>

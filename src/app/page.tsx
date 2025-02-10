@@ -2,7 +2,7 @@ import AddPhoto from "@/components/Feeds/AddPost"
 import { Feed } from "@/components/Feeds/Feed"
 import { LeftMenu } from "@/components/LeftMenu/LeftMenu"
 import { RightMenu } from "@/components/RightMenu/RightMenu"
-import Stories from "@/components/Feeds/Stories"
+import Stories from "@/components/Stories"
 
 const Homepage = () => {
 
