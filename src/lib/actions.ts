@@ -4,6 +4,7 @@ import { auth } from "@clerk/nextjs/server";
 import prisma from "./client"
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
+import { env } from "process";
 
 export const switchFollow = async({userId , currentUserID , isUserBlocked , isFollowing , isFollowReqSent} : {
     userId : string,
@@ -390,3 +391,46 @@ export const deletePost = async(postId : string)=>{
         throw new Error("Something went Wrong");
     }
 }
+
+export const getFollowers = async()=>{
+    const {userId : currentUserId} = await auth();
+    if(!currentUserId) return;
+    try {
+        const userDetails = await prisma.user.findFirst({
+            where:{
+                clerkId: currentUserId,
+            },
+        });
+        if(!userDetails) return;
+        const followers = await prisma.follower.findMany({
+            where:{
+                followerId: userDetails.id
+            },
+            include:{
+                following: true
+            }
+        });
+        // console.log("Followers -> " , followers);
+        return followers;
+    } catch (error) {
+        console.log(error);
+        throw new Error("Something went Wrong");
+    }   
+}
+
+export const latestNews = async () => {
+    try {
+      const NEWS_APIKEY = process.env.NEWS_API_KEY;
+      if (!NEWS_APIKEY) {
+        throw new Error("API key is missing");
+      }
+  
+      const newsData = await fetch(`https://newsapi.org/v2/top-headlines?country=us&apiKey=${NEWS_APIKEY}`);
+      const news = await newsData.json();
+      console.log(news.articles);
+      return news.articles;
+    } catch (error) {
+      console.log(error);
+      throw new Error("Something went wrong");
+    }
+  };

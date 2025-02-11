@@ -10,3 +10,15 @@
 .scrollbar-hide{
     scrollbar-width: none;
 }
+
+.news-item {
+    @apply relative overflow-hidden;
+  }
+  
+  .news-item img {
+    @apply transition-opacity duration-300 ease-in-out;
+  }
+  
+  .news-item:hover img {
+    @apply opacity-100;
+  }

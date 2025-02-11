@@ -1,13 +1,18 @@
-"use client";
+"use client"
 
 import Link from 'next/link';
 import React from 'react'
 import MobileMenu from './MobileMenu';
 import Image from 'next/image';
 import { ClerkLoaded, ClerkLoading } from '@clerk/nextjs';
-import { SignedIn, SignedOut, UserButton } from '@clerk/clerk-react';
+import { SignedIn, SignedOut, useAuth, UserButton, useUser } from '@clerk/clerk-react';
 
 const Navbar = () => {
+   
+  const {user} = useUser();
+  if(!user) return;
+//   console.log("user -> " , user);
+
   return (
     <div className='h-24 flex justify-between items-center'>
         {/* Left */}
@@ -18,13 +23,13 @@ const Navbar = () => {
         {/* Center */}
         <div className='hidden md:flex w-[50%] text-sm flex items-center justify-between'>
             <div className='flex gap-6 text-gray-600' >
-                <Link href="" className='flex items-center gap-2'>
+                <Link href="/" className='flex items-center gap-2'>
                  <Image src="/home.png" alt='Homepage' height={16} width={16} className='w-4 h-4'  />
                 <span>Homepage</span>
                 </Link>
-                <Link href="" className='flex items-center gap-2'>
+                <Link href={`/friends/` +  user.username} className='flex items-center gap-2'>
                  <Image src="/friends.png" alt='Friends' height={16} width={16} className='w-4 h-4'  />
-                <span>Friends</span>
+                <span >Friends</span>
                 </Link>
                 <Link href="" className='flex items-center gap-2'>
                  <Image src="/stories.png" alt='Stories' height={16} width={16} className='w-4 h-4'  />

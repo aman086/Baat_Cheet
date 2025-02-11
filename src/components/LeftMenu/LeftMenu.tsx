@@ -1,9 +1,17 @@
+// "use client"
+
 import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
 import ProfileCard from './ProfileCard'
+import { useUser } from '@clerk/nextjs'
 
+// export const LeftMenu = ({type , setLeftWindow} : {type : "home" | "profile" , setLeftWindow : (leftWindow : string) => void }) => {
 export const LeftMenu = ({type} : {type : "home" | "profile"}) => {
+
+    //   const {user} = useUser();
+    //   if(!user) return;
+
   return (
     <div className='flex flex-col gap-4'>
       {/* PROFILE Card */}
@@ -32,7 +40,7 @@ export const LeftMenu = ({type} : {type : "home" | "profile"}) => {
               <Image src="/videos.png" alt='' width={16} height={16} className='h-4 w-4 cursor-pointer' />
               <span className='text-slate-600'>Videos</span>
           </Link>
-          <Link href="/" className='flex items-center text-sm gap-4 hover:bg-slate-200 p-2 rounded-lg'>
+          <Link href="/News" className='flex items-center text-sm gap-4 hover:bg-slate-200 p-2 rounded-lg'>
               <Image src="/news.png" alt='' width={16} height={16} className='h-4 w-4 cursor-pointer' />
               <span className='text-slate-600'>News</span>
           </Link>
