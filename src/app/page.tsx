@@ -5,7 +5,7 @@ import { Feed } from "@/components/Feeds/Feed"
 import { LeftMenu } from "@/components/LeftMenu/LeftMenu"
 import { RightMenu } from "@/components/RightMenu/RightMenu"
 import Stories from "@/components/Stories"
-import News from "./News/page"
+import News from "./News/Page"
 import { User } from "@clerk/nextjs/server"
 import { useUser } from "@clerk/nextjs"
 
