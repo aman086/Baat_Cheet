@@ -1,6 +1,7 @@
 "use client";
 
 import { latestNews } from "@/lib/actions";
+import Image from "next/image";
 import React, { useEffect, useState } from "react";
 
 const News = () => {
@@ -40,16 +41,16 @@ const News = () => {
               key={index}
               className="bg-white p-4 shadow-2xl cursor-pointer  group"
               onClick={() => window.open(news.url, "_blank")}
-              onMouseEnter={()=> setHoveredNews(index)}
-              onMouseLeave={()=> setHoveredNews(null)}
+              // onMouseEnter={()=> setHoveredNews(index)}
+              // onMouseLeave={()=> setHoveredNews(null)}
             >
               <h1 className="text-xl font-bold"> {news.title}</h1>
               <p className="">{news.content}</p>
-              {hoveredNews == index && news.urlToImage && (
+              {/* {hoveredNews == index && news.urlToImage && ( */}
                 <div className="w-1/3 h-1/3">
-                  <img src={news.urlToImage} alt={news.title} className= "max-w-full max-h-full"></img>
+                  <Image src={news.urlToImage} alt={news.title} className= "max-w-full max-h-full" />
                 </div>
-              )}
+              {/* )} */}
             </div>
           ))}
         </div>

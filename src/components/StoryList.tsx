@@ -15,6 +15,8 @@ const StoryList = ({stories, userId} : {stories : StoryWithUser[], userId : stri
   const {user , isLoaded} = useUser();
   const [img , setImg] = useState<any>();
   const [story , setStory] = useState<StoryWithUser[]>(stories);
+  const [fullViewStory , setFullViewStory] = useState(false);
+  const [storyImg , setStoryImg] = useState("");
   const [optimisticStory , setOptimisticStory] = useOptimistic(story,
     (state , value : StoryWithUser)=>[...state , value],
   )
@@ -83,12 +85,15 @@ return (
             {optimisticStory.map((story)=>{
 
               return (
-                <div key={story.id} className='flex flex-col gap-2 items-center cursor-pointer'>
+                <>
+                <div key={story.id} className='flex flex-col gap-2 items-center cursor-pointer' onClick={()=> {setFullViewStory(true); setStoryImg(story.img)}}>
                   <Image src={story.img} alt='' width={80} height={80} className=' w-20 h-20 rounded-full ring-2' />
                   <span className='font-medium'>{story.user.username}</span>
                 </div>
+                </>
               )
-            })
+            }
+          )
           }
             </div>
     </div>
