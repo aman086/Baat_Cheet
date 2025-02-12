@@ -5,7 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react'
 
-const page = ({params} : {params : {username : string}}) => {
+const Page = ({params} : {params : {username : string}}) => {
   // const {username} = params;
 
   // const fetchFollowers
@@ -50,7 +50,7 @@ const page = ({params} : {params : {username : string}}) => {
   )
 }
 
-export default page
+export default Page
 
 
 
