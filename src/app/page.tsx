@@ -5,9 +5,10 @@ import { Feed } from "@/components/Feeds/Feed"
 import { LeftMenu } from "@/components/LeftMenu/LeftMenu"
 import { RightMenu } from "@/components/RightMenu/RightMenu"
 import Stories from "@/components/Stories"
-import News from "./News/Page"
+import News from "./News/page"
 import { User } from "@clerk/nextjs/server"
 import { useUser } from "@clerk/nextjs"
+import Image from "next/image"
 
 const Homepage = () => {
 
@@ -24,6 +25,7 @@ const Homepage = () => {
         {/* {(leftWindow && leftWindow == "news") ? <News />
         : */}
         <div className="flex flex-col gap-6">
+          {/* <Image src="/brandbird-Card.svg" alt="" width={1000} height={1000} /> */}
           <Stories />
           <AddPhoto />
           <Feed />

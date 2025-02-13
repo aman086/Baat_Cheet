@@ -9,9 +9,17 @@ import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import React, { use } from 'react'
 
-const Profile = async({params} : {params : {username : string}}) => {
+interface ProfileProps {
+  params: {
+    username: string
+  }
+}
 
-  const username = params.username;
+const Profile = async ({ params }: ProfileProps) => {
+  const { username } = params;
+
+// const Profile = async({params} : {params : {username : string}}) => {
+  // const {username} = params;
   console.log("username - " , username);
   let isBlock;
   const user = await prisma.user.findFirst({
@@ -78,12 +86,18 @@ const Profile = async({params} : {params : {username : string}}) => {
               <span className='font-bold text-md'>Following</span>
             </div>
         </div>
-        <Feed username={params.username} />
+        <Feed username={username} />
       </div>
     </div>
     <div className="hidden lg:block w-[30%]"><RightMenu user={user}/></div>
   </div>
   )
 }
+
+
+// export const getServerSideProps: GetServerSideProps = async (context) => {
+//   const { username } = context.params as { username: string };
+//   return { props: { username } };
+// };
 
 export default Profile;

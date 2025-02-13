@@ -47,9 +47,9 @@ const News = () => {
               <h1 className="text-xl font-bold"> {news.title}</h1>
               <p className="">{news.content}</p>
               {/* {hoveredNews == index && news.urlToImage && ( */}
-                <div className="w-1/3 h-1/3">
-                  <Image src={news.urlToImage} alt={news.title} className= "max-w-full max-h-full" />
-                </div>
+                {/* <div className="w-1/3 h-1/3">
+                  <Image src={news.urlToImage} alt={news.title} height={400} width={400} className= "max-w-full max-h-full" />
+                </div> */}
               {/* )} */}
             </div>
           ))}

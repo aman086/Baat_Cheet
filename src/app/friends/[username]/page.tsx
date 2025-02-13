@@ -5,10 +5,9 @@ import Image from 'next/image'
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react'
 
-const Page = ({params} : {params : {username : string}}) => {
-  // const {username} = params;
 
-  // const fetchFollowers
+const Page = () => {
+
   const [followersList , setFollowersList] = useState<any[]>([]);
 
   const fetchFollowings = async() => {
@@ -25,7 +24,7 @@ const Page = ({params} : {params : {username : string}}) => {
   return (
     <div className=' xl:w-[100%] h-[calc(100vh-96px)]'>
      <div className='flex flex-col p-10 justify-center items-center border border-b-8 bg-slate-200 h-[calc(100vh-96px)]'>
-        <div className='flex flex-col mt-16 flex-wrap grid grid-cols-2 overflow-y-auto gap-12 max-h-[calc(100vh-250px)] scrollbar-hide'>
+        <div className='flex flex-col mt-16 flex-wrap grid-cols-2 overflow-y-auto gap-12 max-h-[calc(100vh-250px)] scrollbar-hide'>
           {followersList.map(follower =>(
           <Link href="/profile/dev_12" key={follower.id}>
             <div className='flex flex-row gap-20 justify-between items-center p-4 w-72 rounded-xl mt-4 border border-gray-100 shadow-md' >
