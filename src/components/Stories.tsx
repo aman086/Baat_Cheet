@@ -7,16 +7,16 @@ import StoryList from './StoryList';
 const Stories = async() => {
 
 
-  const {userId : userClerkId} = await auth();
-  if(!userClerkId) return null;
+  const {userId : currentUserId} = await auth();
+  if(!currentUserId) return null;
 
-  const currentUser = await prisma.user.findFirst({
-    where:{
-      clerkId: userClerkId,
-    },
-  });
+  // const currentUser = await prisma.user.findFirst({
+  //   where:{
+  //     clerkId: userClerkId,
+  //   },
+  // });
 
-  if(!currentUser) return null;
+  // if(!currentUser) return null;
 
   const stories = await prisma.story.findMany({
     where:{
@@ -26,14 +26,14 @@ const Stories = async() => {
       OR:[
         {
           user:{
-            followers:{
+            followings:{
               some:{
-                followerId: currentUser.id,
+                followingId: currentUserId,
               },
             },
           },
         },{
-          userId: currentUser.id
+          userId: currentUserId
         },
       ],
     },
@@ -41,10 +41,11 @@ const Stories = async() => {
       user: true,
     },
   });
+  console.log("Stories -> " , stories);
   if(!stories) return null;
   return (
     <div className='p-4 bg-white shadow-md rounded-lg overflow-auto text-sm scrollbar-hide'>
-      <StoryList stories={stories} userId={currentUser.id} />
+      <StoryList stories={stories} userId={currentUserId} />
     </div>
   )
 }

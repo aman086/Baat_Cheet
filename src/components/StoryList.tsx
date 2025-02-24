@@ -6,6 +6,7 @@ import { Story, User } from '@prisma/client'
 import { CldUploadWidget } from 'next-cloudinary';
 import Image from 'next/image';
 import React, { useOptimistic, useState } from 'react'
+import { useRouter } from 'next/navigation';
 
 type StoryWithUser = Story & {
   user : User;
@@ -21,7 +22,7 @@ const StoryList = ({stories, userId} : {stories : StoryWithUser[], userId : stri
     (state , value : StoryWithUser)=>[...state , value],
   )
 
-
+  const router = useRouter();
   if (!isLoaded) return <div>Loading...</div>;
   if (!user) return <div>Not authenticated</div>;
   const add = async()=>{
@@ -47,20 +48,20 @@ const StoryList = ({stories, userId} : {stories : StoryWithUser[], userId : stri
           school: "",
           website: "",
           createdAt : new Date(Date.now()),
-          
         },
       });
       
-      try {
-  
-      const newStory = await addStory(img.secure_url, userId);
-      setStory((prev) => [newStory!, ...prev]);
-      setImg(null);
+try {
+  const newStory = await addStory(img.secure_url, userId);
+  setStory((prev) => [newStory!, ...prev]);
+  setImg(null);
+  router.refresh();
 } catch (error) {
   console.log(error);
 }
 }
-
+console.log("Optimistic Story -> " , optimisticStory);
+console.log("Story -> " , stories);
 return (
     <div>
       <div className='flex gap-8 w-max'>
@@ -85,7 +86,7 @@ return (
             {optimisticStory.map((story)=>{
 
               return (
-                <div key={story.id} className='flex flex-col gap-2 items-center cursor-pointer' onClick={()=> {setFullViewStory(true); setStoryImg(story.img)}}>
+                <div key={story.id} className='flex flex-col gap-2 items-center cursor-pointer'>
                   <Image src={story.img} alt='' width={80} height={80} className=' w-20 h-20 rounded-full ring-2' />
                   <span className='font-medium'>{story.user.username}</span>
                 </div>

@@ -13,11 +13,11 @@ const ProfileCard = async() => {
 
    const {userId} = await auth();
 
-   if(!userId) return null;
+   if(!userId) return "nahi mila user";
 
    const user = await prisma.user.findFirst({
     where:{
-      clerkId: userId,
+      id: userId,
     },
     include:{
       _count:{

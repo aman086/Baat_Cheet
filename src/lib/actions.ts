@@ -18,8 +18,9 @@ export const switchFollow = async({userId , currentUserID , isUserBlocked , isFo
         try {
             const existingFollow = await prisma.follower.findFirst({
                 where: {
-                    followerId: currentUserID,
-                    followingId: userId
+                    followerId: userId,
+                    followingId: currentUserID
+                    // followerId: currentUserID,
                 },
             });
 
@@ -68,13 +69,14 @@ export const switchBlock = async({userId , currentUserID , isUserBlocked} : {
     try {
         const existingBlock = await prisma.block.findFirst({
             where: {
+                // blockerId: userId,
                 blockerId: currentUserID,
                 blockedId: userId
             },
         });
-
+        console.log("Existing Block -> " , existingBlock);
         if(existingBlock){
-            await prisma.follower.delete({
+            await prisma.block.delete({
                 where:{
                     id: existingBlock.id,
                 }
@@ -97,20 +99,20 @@ export const switchBlock = async({userId , currentUserID , isUserBlocked} : {
 
 export const acceptFollowReq = async(userId : string)=>{
 
-    const {userId : currentUser_ClerkId} = await auth();
-    if(!currentUser_ClerkId) return null;
-    const currentUserFullDetails = await prisma.user.findFirst({
-        where:{
-            clerkId: currentUser_ClerkId,
-        },
-    });
+    const {userId : currentUserId} = await auth();
+    if(!currentUserId) return null;
+    // if(!currentUser_ClerkId) return null;
+    // const currentUserFullDetails = await prisma.user.findFirst({
+    //     where:{
+    //         clerkId: currentUser_ClerkId,
+    //     },
+    // });
 
-    if(!currentUserFullDetails) return null;
 
     const existingFollowReq = await prisma.followRequest.findFirst({
         where:{
             senderId: userId,
-            receiverId: currentUserFullDetails.id
+            receiverId: currentUserId
         }
     });
 
@@ -124,7 +126,7 @@ export const acceptFollowReq = async(userId : string)=>{
 
         await prisma.follower.create({
             data:{
-                followerId: currentUserFullDetails.id,
+                followerId: currentUserId,
                 followingId: userId
             },
         });
@@ -133,20 +135,14 @@ export const acceptFollowReq = async(userId : string)=>{
 
 export const declineFollowReq = async(userId : string)=>{
 
-    const {userId : currentUser_ClerkId} = await auth();
-    if(!currentUser_ClerkId) return null;
-    const currentUserFullDetails = await prisma.user.findFirst({
-        where:{
-            clerkId: currentUser_ClerkId,
-        },
-    });
+    const {userId : currentUserId} = await auth();
+    if(!currentUserId) return null;
 
-    if(!currentUserFullDetails) return null;
 
     const existingFollowReq = await prisma.followRequest.findFirst({
         where:{
             senderId: userId,
-            receiverId: currentUserFullDetails.id
+            receiverId: currentUserId
         }
     });
 
@@ -185,12 +181,12 @@ export const UpdateUserDetails = async(prevState:{success: boolean , error: bool
         return {success: false , error : true};
     }
     
-    const {userId : CurrentUserClerkId} = await auth();
-    if(!CurrentUserClerkId) return {success: false , error : true};
+    const {userId : CurrentUserId} = await auth();
+    if(!CurrentUserId) return {success: false , error : true};
 
     const currentUserFullDetails = await prisma.user.findFirst({
         where:{
-            clerkId: CurrentUserClerkId,
+            id: CurrentUserId,
         },
     });
 
@@ -199,7 +195,7 @@ export const UpdateUserDetails = async(prevState:{success: boolean , error: bool
     try {
         await prisma.user.update({
             where:{
-                id : currentUserFullDetails.id,
+                id : CurrentUserId,
             },
             data: validateFields.data,
         })
@@ -211,28 +207,78 @@ export const UpdateUserDetails = async(prevState:{success: boolean , error: bool
 }
 
 
-export const switchLike = async({postId} : {postId : string})=>{
-    const {userId : currentUserClerkId} = await auth();
-    try {
-        if (!currentUserClerkId) throw new Error("User not authenticated");
-        if (!postId) throw new Error("Post ID is required");
-        const userDetails = await prisma.user.findFirst({
-            where:{
-                clerkId: currentUserClerkId,
-            },
-        });
+// export const switchLike = async({postId} : {postId : string})=>{
+//     const {userId : currentUserClerkId} = await auth();
+//     try {
+//         if (!currentUserClerkId) throw new Error("User not authenticated");
+//         if (!postId) throw new Error("Post ID is required");
+//         const userDetails = await prisma.user.findFirst({
+//             where:{
+//                 clerkId: currentUserClerkId,
+//             },
+//         });
 
-        if(!userDetails) return null;
-        const currentUserId = userDetails.id;
+//         if(!userDetails) return null;
+//         const currentUserId = userDetails.id;
         
+//         const existingLike = await prisma.like.findFirst({
+//             where:{
+//                 userId: currentUserId,
+//                 postId: postId,
+//             },
+//         });
+
+//         // console.log("existingLike -> " , existingLike);
+
+//         if(existingLike){
+//             await prisma.like.delete({
+//                 where:{
+//                     id: existingLike.id,
+//                 },
+//             });
+//         }
+//         else{
+//             // console.log("Current User ID -> " , currentUserId);
+//             // console.log("Post ID -> " , postId);
+
+//             await prisma.like.create({
+//                 data:{
+//                     userId: currentUserId,
+//                     postId: postId
+//                 },
+//             });
+//         }  
+        
+//    } catch (error) {
+//     console.log(error);
+//     throw new Error("Something went Wrong");
+//    }
+// }
+
+
+
+
+// ----------------------------------------------------------------------------------------------------------------------
+// Newly Added Code after mySQL
+// ----------------------------------------------------------------------------------------------------------------------
+
+
+
+
+export const switchLike = async({postId} : {postId : string})=>{
+    const {userId} = await auth();
+    try {
+        if (!userId) throw new Error("User not authenticated");
+        if (!postId) throw new Error("Post ID is required");
+
         const existingLike = await prisma.like.findFirst({
             where:{
-                userId: currentUserId,
+                userId: userId,
                 postId: postId,
             },
         });
 
-        // console.log("existingLike -> " , existingLike);
+        console.log("existingLike -> " , existingLike);
 
         if(existingLike){
             await prisma.like.delete({
@@ -242,12 +288,12 @@ export const switchLike = async({postId} : {postId : string})=>{
             });
         }
         else{
-            // console.log("Current User ID -> " , currentUserId);
+            // console.log("Current User ID -> " , userId);
             // console.log("Post ID -> " , postId);
 
             await prisma.like.create({
                 data:{
-                    userId: currentUserId,
+                    userId: userId,
                     postId: postId
                 },
             });
@@ -271,21 +317,52 @@ export const getUserId_FromClerkId = async(userId : string)=>{
     return getUser;
 }
 
+// export const addComment = async(postId : string , desc : string)=>{
+//     const {userId : currentUserId} = await auth();
+//     if(!currentUserId) return null;
+//     try {
+//         const userDetails = await prisma.user.findFirst({
+//             where:{
+//                 clerkId: currentUserId,
+//             },
+//         });
+//         if(!userDetails) return null;
+//         const createComment = await prisma.comment.create({
+//             data:{
+//                 desc: desc,
+//                 postId: postId,
+//                 userId: userDetails.id
+//             },
+//             include:{
+//                 user: true
+//             }
+//         });
+//         return createComment;
+//     } catch (error) {
+//         console.log(error);
+//         throw new Error("Something went Wrong");
+//     }
+// }
+
+
+
+
+// ----------------------------------------------------------------------------------------------------------------------
+// Newly Added Code after mySQL
+// ----------------------------------------------------------------------------------------------------------------------
+
+
+
 export const addComment = async(postId : string , desc : string)=>{
     const {userId : currentUserId} = await auth();
     if(!currentUserId) return null;
     try {
-        const userDetails = await prisma.user.findFirst({
-            where:{
-                clerkId: currentUserId,
-            },
-        });
-        if(!userDetails) return null;
+
         const createComment = await prisma.comment.create({
             data:{
                 desc: desc,
                 postId: postId,
-                userId: userDetails.id
+                userId: currentUserId
             },
             include:{
                 user: true
@@ -298,6 +375,44 @@ export const addComment = async(postId : string , desc : string)=>{
     }
 }
 
+
+// export const addPost = async(formData : FormData, imgUrl : string)=>{
+//     const desc = formData.get("desc") as string;
+//     const Desc = z.string().nonempty().min(1).max(255);
+//     const validateDesc = Desc.safeParse(desc);
+//     if(!validateDesc.success){
+//         console.log(validateDesc.error.flatten().fieldErrors);
+//         throw new Error("Description is required");
+//     }
+//    const {userId : currentUserId} = await auth();
+//     if(!currentUserId) return;
+//     try {
+//         const createPost = await prisma.post.create({
+//             data:{
+//                 desc: validateDesc.data,
+//                 userId: currentUserId,
+//                 img: imgUrl
+//             },
+//             include:{
+//                 user: true
+//             }
+//         });
+//         console.log("Created Post -> " , createPost);
+//         revalidatePath("/");
+//         // return;
+//     } catch (error) {
+//         console.log(error);
+//         throw new Error("Something went Wrong");
+//     }
+// }
+
+
+
+// ----------------------------------------------------------------------------------------------------------------------
+// Newly Added Code after mySQL
+// ----------------------------------------------------------------------------------------------------------------------
+
+
 export const addPost = async(formData : FormData, imgUrl : string)=>{
     const desc = formData.get("desc") as string;
     const Desc = z.string().nonempty().min(1).max(255);
@@ -309,23 +424,17 @@ export const addPost = async(formData : FormData, imgUrl : string)=>{
    const {userId : currentUserId} = await auth();
     if(!currentUserId) return;
     try {
-        const userDetails = await prisma.user.findFirst({
-            where:{
-                clerkId: currentUserId,
-            },
-        });
-        if(!userDetails) return;
         const createPost = await prisma.post.create({
             data:{
                 desc: validateDesc.data,
-                userId: userDetails.id,
+                userId: currentUserId,
                 img: imgUrl
             },
             include:{
                 user: true
             }
         });
-        // console.log("Created Post -> " , createPost);
+        console.log("Created Post -> " , createPost);
         revalidatePath("/");
         // return;
     } catch (error) {

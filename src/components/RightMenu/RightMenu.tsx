@@ -8,19 +8,20 @@ import { User } from "@prisma/client";
 import { auth } from "@clerk/nextjs/server";
 import prisma from "@/lib/client";
 
-export const RightMenu = async({ user }: { user: User }) => {
+export const RightMenu = async({ userId }: { userId: string }) => {
 
-  const {userId : currentUserClerkId} = await auth();
-  if(!currentUserClerkId) return null;
-  const currentUser = await prisma.user.findFirst({
+  const {userId : currentUserId} = await auth();
+  if(!currentUserId) return null;
+
+  const user = await prisma.user.findFirst({
     where:{
-      clerkId:currentUserClerkId,
-    }
-  })
-  if(!currentUser) return null;
+      id : userId,
+    },
+  });
+  if(!user) return null;
   return (
     <div className="flex flex-col gap-6">
-      {user && (
+      {userId && (
         <>
           <Suspense fallback="Loading......">
             <UserInfoCard user={user} />
@@ -30,10 +31,10 @@ export const RightMenu = async({ user }: { user: User }) => {
           </Suspense>
         </>
       )}
-      {currentUser.id === user.id &&  <FriendRequests user={user} />}
-      {currentUser.id === user.id &&  <Birthdays />}
+      {currentUserId === user.id &&  <FriendRequests user={user} />}
+      {currentUserId === user.id &&  <Birthdays />}
       
-      <Ad size="md" />
+      {/* <Ad size="md" /> */}
     </div>
   );
 };

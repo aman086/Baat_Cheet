@@ -2,6 +2,7 @@
 
 import { switchBlock, switchFollow } from "@/lib/actions";
 import { useOptimistic, useState } from "react";
+import { useRouter } from "next/navigation";
 
 const UserInfoCardInteraction = ({
   userId,
@@ -16,7 +17,8 @@ const UserInfoCardInteraction = ({
   isFollowing: Boolean;
   isFollowReqSent: Boolean;
 }) => {
-
+  
+  const router = useRouter();
   const [userData, setUserData] = useState({
     userBlocked: isUserBlocked,
     following: isFollowing,
@@ -37,6 +39,7 @@ const UserInfoCardInteraction = ({
       following: prev.following && false,
       followReqSent: !prev.following && !prev.followReqSent ? true : false,
     }));
+    // router.refresh();
   };
 
   const block = async () => {
@@ -46,6 +49,7 @@ const UserInfoCardInteraction = ({
       ...prev,
       userBlocked: !prev.userBlocked,
     }));
+    // router.refresh();
   };
 
   const [optimisticState, switchOptimisticState] = useOptimistic(

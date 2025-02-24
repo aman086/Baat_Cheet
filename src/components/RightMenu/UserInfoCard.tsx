@@ -19,15 +19,16 @@ const UserInfoCard = async({user} : {user : User}) => {
     })
     if(!user) return null;
 
-    const {userId : currentUser_ClerkId} = await auth();
+    const {userId : currentUserID} = await auth();
+    if(!currentUserID) return null;
     // console.log("currentUserID : " , currentUser_ClerkId);
-    if(!currentUser_ClerkId) return null;
-    const currentUserFull_Details = await prisma.user.findFirst({
-        where:{
-        clerkId: currentUser_ClerkId,
-        }
-    })
-    const currentUserID = currentUserFull_Details?.id;
+    // if(!currentUser_ClerkId) return null;
+    // const currentUserFull_Details = await prisma.user.findFirst({
+    //     where:{
+    //     clerkId: currentUser_ClerkId,
+    //     }
+    // })
+    // const currentUserID = currentUserFull_Details?.id;
 
     let isUserBlocked = false;
     let isFollowing = false;
@@ -35,15 +36,20 @@ const UserInfoCard = async({user} : {user : User}) => {
 
     const blockRes = await prisma.block.findFirst({
         where: {
-            blockedId: currentUserID,
-            blockerId: user.id
+            blockerId: currentUserID,
+            blockedId: user.id
+            // blockedId: currentUserID
         },
     });
+
+    // console.log("Current User -> " , currentUserID);
+    // console.log("Block res -> " , blockRes);
+    // info blockRes;
    
     const followingRes = await prisma.follower.findFirst({
         where: {
-            followerId: currentUserID,
-            followingId: user.id
+            followingId: currentUserID,
+            followerId: user.id
         },
     });
 
@@ -57,7 +63,7 @@ const UserInfoCard = async({user} : {user : User}) => {
     (blockRes) ? isUserBlocked = true : isUserBlocked = false;
     (followingRes) ? isFollowing = true : isFollowing = false;
     (followReqSent) ? isFollowReqSent = true : isFollowReqSent = false;
-
+    console.log("following Res -> "  , followingRes);
     if(!currentUserID || !user.id) return null;
   return (
     <div className='p-4 bg-white rounded-lg shadow-md text-sm flex flex-col gap-4'>

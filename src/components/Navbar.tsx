@@ -10,7 +10,7 @@ import { SignedIn, SignedOut, useAuth, UserButton, useUser } from '@clerk/clerk-
 const Navbar = () => {
    
   const {user} = useUser();
-  if(!user) return;
+//   if(!user) return "nahi mila";
 //   console.log("user -> " , user);
 
   return (
@@ -27,7 +27,8 @@ const Navbar = () => {
                  <Image src="/home.png" alt='Homepage' height={16} width={16} className='w-4 h-4'  />
                 <span>Homepage</span>
                 </Link>
-                <Link href={`/friends/` +  user.username} className='flex items-center gap-2'>
+                {/* <Link href={`/friends/` +  user.username} className='flex items-center gap-2'> */}
+                <Link href='/' className='flex items-center gap-2'>
                  <Image src="/friends.png" alt='Friends' height={16} width={16} className='w-4 h-4'  />
                 <span >Friends</span>
                 </Link>

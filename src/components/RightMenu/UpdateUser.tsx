@@ -15,6 +15,10 @@ const UpdateUser = ({user} : {user : User}) => {
 
   const [open ,setOpen] = useState(false);
   const [cover , setCover] = useState<any>(user.cover);
+  const [state, setState] = useState<{ success: boolean; error: boolean; fieldErrors?: any }>({
+    success: false,
+    error: false,
+  });
 
   const router = useRouter();
   const handleClose = ()=>{
@@ -22,14 +26,33 @@ const UpdateUser = ({user} : {user : User}) => {
     state.success && (state.success = false, state.error=false, router.refresh());
   }
 
-  const [state , formAction] = useActionState(UpdateUserDetails , {success: false, error: false});
+  // const [state , formAction] = useActionState(UpdateUserDetails , {success: false, error: false});
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+
+    const response = await UpdateUserDetails(state, {
+      formData,
+      cover: cover?.secure_url || "",
+    });
+
+    if (response.success) {
+      setState({ success: true, error: false });
+      router.refresh();
+    } else {
+      setState({ success: false, error: true });
+    }
+  };
+
+
 
 
   return (
     <div>
       <span className='text-blue-500 text-sm cursor-pointer' onClick={()=> setOpen(true)}>Update</span>
       {open && <div className='absolute bg-black w-screen h-screen flex left-0 top-0 bg-opacity-65 items-center justify-center z-50'>
-        <form  action={(formData) => formAction({formData , cover:cover?.secure_url || ""})} className='relative bg-white flex flex-col gap-2 w-full md:w-1/2 lg:w-1/3 rounded-lg p-12 shadow-md'>
+        <form  onSubmit={handleSubmit}  className='relative bg-white flex flex-col gap-2 w-full md:w-1/2 lg:w-1/3 rounded-lg p-12 shadow-md'>
             <h1>Update Profile</h1>
             <div className='text-gray-500 mt-4 text-sm'>
                 Use the Navbar Profile to change the Avatar or username.
@@ -99,3 +122,5 @@ const UpdateUser = ({user} : {user : User}) => {
 }
 
 export default UpdateUser
+
+

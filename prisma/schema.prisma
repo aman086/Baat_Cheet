@@ -8,14 +8,19 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// datasource db {
+//   provider = "mongodb"
+//   url      = env("DATABASE_URL")
+// }
+
 datasource db {
-  provider = "mongodb"
+  provider = "mysql"
   url      = env("DATABASE_URL")
+  // url      = "mongodb+srv://aman:aman1234@db.ajl1t.mongodb.net/?retryWrites=true&w=majority&appName=db"
 }
 
-
 model User{
-  id    String @id @default(auto()) @map("_id") @db.ObjectId
+  id    String @id @default(uuid())
   clerkId     String   @unique
   username String @unique
   avatar String?
@@ -41,74 +46,74 @@ model User{
 }
 
 model Post{
-  // id String @id @map("_id") @default(auto()) @db.ObjectId
-  id    String @id @default(auto()) @map("_id") @db.ObjectId
+  // id String @id @map("_id") @default(uuid()) 
+   id    String @id @default(uuid())
   desc String
   img String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   user User @relation(fields: [userId], references: [id] , onDelete : Cascade)
-  userId String @db.ObjectId
+  userId String
   comments Comment[]
   likes Like[]
 }
 
 model Comment{
-  id String @id @map("_id") @default(auto()) @db.ObjectId
+   id    String @id @default(uuid())
   user User @relation(fields: [userId] , references: [id] , onDelete : Cascade)
-  userId String @db.ObjectId
+  userId String 
   desc String
   post Post @relation(fields: [postId] , references: [id] , onDelete : Cascade)
-  postId String @db.ObjectId
+  postId String 
   likes Like[]
 }
 
 model Like{
-  id String @id @map("_id") @default(auto()) @db.ObjectId
+   id    String @id @default(uuid())
   createdAt DateTime @default(now())
-  commentId String? @db.ObjectId
+  commentId String? 
   comment Comment? @relation(fields: [commentId] , references: [id] , onDelete : Cascade)
-  userId String @db.ObjectId
+  userId String 
   user User @relation(fields: [userId] , references: [id] , onDelete : Cascade)
   post Post? @relation(fields: [postId] , references: [id] , onDelete : Cascade)
-  postId String @db.ObjectId
+  postId String
 }
 
 model Follower{
-  id String @id  @map("_id") @db.ObjectId @default(auto())
+   id    String @id @default(uuid())
   createdAt DateTime @default(now())
   follower User @relation("UserFollowers" , fields: [followerId] , references: [id] , onDelete: Cascade)
-  followerId String @db.ObjectId
+  followerId String 
   following User @relation("UserFollowings" , fields: [followingId] , references: [id] , onDelete: Cascade)
-  followingId String @db.ObjectId
+  followingId String 
 }
 
 model FollowRequest{
-  id String @id  @map("_id") @db.ObjectId @default(auto())
+  id String @id  @map("_id")  @default(uuid())
   createdAt DateTime @default(now())
   sender User @relation("FollowRequestSent" , fields: [senderId] , references: [id] , onDelete: Cascade)
-  senderId String @db.ObjectId
+  senderId String 
   receiver User @relation("FollowRequestReceived" , fields: [receiverId] , references: [id] , onDelete: Cascade)
-  receiverId String @db.ObjectId
+  receiverId String 
   @@unique([senderId , receiverId])
 }
 
 model Block{
-  id String @id  @map("_id") @db.ObjectId @default(auto())
+  id String @id  @map("_id")  @default(uuid())
   createdAt DateTime @default(now())
   blocker User @relation("BlockSent" , fields: [blockerId] , references: [id] , onDelete: Cascade)
-  blockerId String @db.ObjectId
+  blockerId String 
   blocked User @relation("BlockReceived" , fields: [blockedId] , references: [id] , onDelete: Cascade)
-  blockedId String @db.ObjectId
+  blockedId String 
 
   @@unique([blockerId , blockedId])
 }
 
 model Story{
-  id String @id  @map("_id") @db.ObjectId @default(auto())
+  id String @id  @map("_id")  @default(uuid())
   createdAt DateTime @default(now())
   img String
   expiresAt DateTime
   user User @relation(fields: [userId] , references: [id] , onDelete : Cascade)
-  userId String @unique @db.ObjectId
+  userId String @unique 
 }
