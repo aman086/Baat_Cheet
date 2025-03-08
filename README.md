@@ -86,7 +86,7 @@ npm install
 ## 💬 **Connect with Me**
 
 - 🔗 **GitHub:** [Aman086](https://github.com/aman086)  
-- 📩 **Email:** aman.k26t@gmail.com *(Replace with your actual email)*  
+- 📩 **Email:** aman.k26t@gmail.com
 - 💼 **LinkedIn:** [Aman Tiwari](https://www.linkedin.com/in/aman086/)  
 
 
